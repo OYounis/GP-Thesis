@@ -1,0 +1,160 @@
+\documentclass[12pt, a4paper, openany]{book}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage[a4paper, margin = 1.0in, bindingoffset = 1cm]{geometry}
+\usepackage[english]{babel}
+\usepackage{blindtext}
+\usepackage{{microtype}}
+\usepackage{graphicx}
+\usepackage{tabto}
+\usepackage{fancyhdr}
+\usepackage{mfirstuc}
+\usepackage{afterpage}
+\usepackage{subfiles}
+
+\graphicspath{{images/}}
+\pagestyle{fancy}
+\fancyfoot[CE,CO]{}
+\fancyfoot[LE,RO]{\thepage}
+
+\newcommand\blankpage{%
+    \null
+    \thispagestyle{empty}%
+    \addtocounter{page}{-1}%
+    \newpage}
+
+\begin{document}
+\pagenumbering{roman}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%% title page %%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+    \title{
+        \Huge{
+            \textbf{
+                \capitalisewords{
+                    AlexCore \\
+                }
+            }
+        }
+        \capitalisewords{
+            \large {Design, verification, and tape-out of a linux-capable cryptographic RISC-V RV32IM core 
+            integrated with the OpenPiton BYOC cache coherence platform}
+        }
+    }
+    
+    %\author[1]{Alice Smith}
+    %\author[2]{Bob Jones}
+    \author{
+            Full Person Name one\and Full Person Name two\and 
+            Full Person Name Three\and Full Person Name four\and
+            Full Person Name five\and Full Person Name six\and
+            Full Person Name seven\and Full Person Name eight\and
+            Full Person Name nine\and Full Person Name ten\and
+            Full Person Name eleven
+        }
+    
+    \date{
+        \begin{center}
+            \vspace{2cm}
+            \emph{A thesis submitted in partial fulfillment of the requirements for the degree of
+            Bachelor of Science
+            in Electronics and Communications Engineering, Faculty of Engineering, Alexandria University.\\}
+    
+            \vspace{2cm}
+            \Large{\textbf{Under the Supervesion of\\}}
+            Prof.Dr.\ FUll name, Alexandria University,\\
+            Dept.\ of Electrical Communication and Electronics (ECE),\\
+            Faculty of Engineering.\\[1cm]
+            
+            %\vspace{1in}
+            \Large{\textbf{Mentored by\\}}
+            ICPedia\\[1cm]
+
+        \end{center}}
+
+    \maketitle
+\end{titlepage}
+
+\afterpage{\blankpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%% Acknowledgement %%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{
+    \begin{center}
+        Acknowledgement
+    \end{center}}
+\addcontentsline{toc}{chapter}{Acknowledgement}
+
+We would like to thank some persons who supported us.
+\blindtext[1]
+
+\afterpage{\blankpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% Abstract %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{
+    \begin{center}
+        Abstract
+    \end{center}}
+\addcontentsline{toc}{chapter}{Abstract}
+\tab RISC-V Architectures have been widely emerging due to RISC-V being open source and more secure. Booting Linux on a RISC-V core requires implementing RV64-IMFAC[1] the IMFAC stands for Integer Operations, Multiply and Division, Floating Point Operations, Atomic Operation and Compressed Instructions; besides of course having a decent memory hierarchy and virtual memory. Implementing all these features and also expect to tape-out the design in just one year is not realistic. So the challenge is to make the very minimum effort to boot a simple Linux patch on AlexCore[2].\\
+
+We want to launch the design of a new Linux-Capable RISC-V[3] core from Alexandria University. This year we intended to implement the minimum features to boot a simple Linux batch without disturbing the future efforts of scaling to have more features or cores.\cite{Balkind:2016:OOS:2872362.2872414}\cite{21de34cd0dd64073b31ada366dd27796} 
+
+\afterpage{\blankpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% Contents %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents
+\afterpage{\blankpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% Figures %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\listoffigures
+\afterpage{\blankpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%% Tables %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\listoftables
+\clearpage
+\afterpage{\blankpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%% Ch1. Introduction %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagenumbering{arabic}
+\subfile{subfiles/ch1_Introduction}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%% Chapter1 %%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{This is cool2}
+\section{Blind Text}
+\blindtext[6]
+
+\section{Blind Text 2}
+\blindtext[3]
+\subsection{sub-section}
+\blindtext[4]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%% Chapter2 %%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{This is cool part2}
+\blindtext[1]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%% bibliography %%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{ieeetr}
+\bibliography{references}
+%\tableofcontents
+
+\end{document}
