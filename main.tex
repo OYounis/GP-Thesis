@@ -82,36 +82,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%% Acknowledgement %%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter*{
-    \begin{center}
-        Acknowledgement
-    \end{center}}
-\addcontentsline{toc}{chapter}{Acknowledgement}
-
-We would like to thank some persons who supported us.
-\blindtext[1]
-
-\afterpage{\blankpage}
+\subfile{subfiles/0-Acknowledgement}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%% Abstract %%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter*{
-    \begin{center}
-        Abstract
-    \end{center}}
-\addcontentsline{toc}{chapter}{Abstract}
-\tab RISC-V Architectures have been widely emerging due to RISC-V being open source and more secure. Booting Linux on a RISC-V core requires implementing RV64-IMFAC[1] the IMFAC stands for Integer Operations, Multiply and Division, Floating Point Operations, Atomic Operation and Compressed Instructions; besides of course having a decent memory hierarchy and virtual memory. Implementing all these features and also expect to tape-out the design in just one year is not realistic. So the challenge is to make the very minimum effort to boot a simple Linux patch on AlexCore[2].\\
-
-We want to launch the design of a new Linux-Capable RISC-V[3] core from Alexandria University. This year we intended to implement the minimum features to boot a simple Linux batch without disturbing the future efforts of scaling to have more features or cores.\cite{Balkind:2016:OOS:2872362.2872414}\cite{21de34cd0dd64073b31ada366dd27796} 
-
-\afterpage{\blankpage}
+\subfile{subfiles/1-Abstract}
+\subfile{subfiles/2-Preface}
+\subfile{subfiles/3-Definitions}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%% Contents %%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tableofcontents
 \afterpage{\blankpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% Figures %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%% Figures %%%%%%%%%%%%%%%%%
@@ -132,24 +120,25 @@ We want to launch the design of a new Linux-Capable RISC-V[3] core from Alexandr
 \pagenumbering{arabic}
 \subfile{subfiles/ch1_Introduction}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%% Chapter1 %%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{This is cool2}
-\section{Blind Text}
-\blindtext[6]
+\subfile{subfiles/ch2_Cryptography}
 
-\section{Blind Text 2}
-\blindtext[3]
-\subsection{sub-section}
-\blindtext[4]
+\subfile{subfiles/ch3_Software and Toolchain}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%% Chapter2 %%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{This is cool part2}
-\blindtext[1]
+\subfile{subfiles/ch4_SoC}
+\subfile{subfiles/ch4subAlexcore}
+\subfile{subfiles/ch4subOpenpiton}
+\subfile{subfiles/ch4subOpenpiton}
+\subfile{subfiles/ch4subOpenpiton}
 
+\subfile{subfiles/ch5_FPGA}
+
+\subfile{subfiles/ch6_UVM}
+
+\subfile{subfiles/ch7_ASIC}
+
+\subfile{subfiles/ch8_Conclusion}
+
+\subfile{subfiles/Appendix}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%% bibliography %%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
