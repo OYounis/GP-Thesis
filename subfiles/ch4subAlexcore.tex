@@ -275,10 +275,28 @@ at lower privilege levels. M-mode is used for low-level access to a hardware pla
     Upon reset, a hart’s privilege mode is set to M. The mstatus fields MIE and MPRV are reset to 0.
 \end{itemize}
 
-
-
-
 \subsection{Interrupt Controller}
-Add text here
+RISC-V defines the following interrupts per Hart:
+\begin{itemize}
+    \item Software – architecturally defined software interrupt
+    \item Timer – architecturally defined timer interrupt
+    \item External – Peripheral Interrupts
+\end{itemize}
+\textbf{Core Local Interrupter (CLINT)}\\
+The CLINT has a fixed priority scheme which implements Software, Timer, and External interrupts. Software preemption is only available between privilege levels using the CLINT. For example, while in Supervisor mode, a Machine mode interrupt will immediately take priority and preempt Supervisor mode operation. Preemption within a privilege level is not supported with the CLINT. The interrupt ID represents the fixed priority value of each interrupt, and is not configurable. There are two different CLINT modes of operation, direct mode and vectored mode. To configure CLINT modes, write mtvec.mode field, which is bit[0] of mtvec CSR. For direct mode, mtvec.mode=0, and for vectored mode mtvec.mode=1. Direct mode is the default reset value. The mtvec.base holds the base address for interrupts and exceptions, and must be a minimum 4-byte aligned value in direct mode.\\
+In our design we used the direct mode, Direct mode means all interrupts and exceptions trap to the same handler, and there is no vector table implemented. It is software’s responsibility to execute code to figure out which interrupt occurred. The software handler in direct mode should first read mcause.interrupt to determine if an interrupt or exception occurred, then decide what to do based on mcause.code value which contains the respective interrupt or exception code.\\
+\\The trap handler - entry and exit are performed as the following:
+\begin{itemize}
+    \item[1-]Save pc to mepc
+    \item[2-]Save Privilege level to mstatus.mpp
+    \item[3-]Save mie to mstatus.mpie
+    \item[4-]Set pc to interrupt handler address, based on mode of operation
+    \item[5-]Disable interrupts by setting mstatus.mie=0\\
+    At this point control is handed over to software where the interrupt processing begins. At the end of the interrupt handler, the mret instruction will do the following.
+    \item[6-]Restore mepc to pc
+    \item[7-]Restore mstatus.mpp to Priv
+    \item[8-]Restore mstatus.mpie to mie
+\end{itemize}
+\textbf{where priv refers to the current privilege level}
 
 \end{document}
