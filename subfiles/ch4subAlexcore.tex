@@ -218,10 +218,98 @@ at lower privilege levels. M-mode is used for low-level access to a hardware pla
             There are two modes (Direct - Vectored)\\
             When MODE=Direct, all traps into machine mode cause the pc to be set to the address in the BASE field. When MODE=Vectored, all synchronous exceptions into machine mode cause the pc to be set to the address in the BASE field, whereas interrupts cause the pc to be set to the address in the BASE field plus four times the interrupt cause number and we will discuss cause number in mcause register.\\
             In our core we implemented the direct mode.\\
+			
             \item Machine Trap Delegation Registers (medeleg and mideleg)\\
+            By default, all traps at any privilege level are handled in machine mode, though a machine-mode
+            handler can redirect traps back to the appropriate level with the MRET instruction.
+            The machine exception delegation register (medeleg) and machine interrupt
+            delegation register (mideleg) are 32-bit read/write registers.
             
+            In systems with S-mode, the medeleg and mideleg registers must exist, and setting a bit in medeleg
+            or mideleg will delegate the corresponding trap, when occurring in S-mode or U-mode, to the Smode trap handler.
+            
+            When a trap is delegated to S-mode, the scause register is written with the trap cause; the sepc
+            register is written with the virtual address of the instruction that took the trap; the stval register
+            is written with an exception-specific datum; the SPP field of mstatus is written with the active
+            privilege mode at the time of the trap; the SPIE field of mstatus is written with the value of the
+            SIE field at the time of the trap; and the SIE field of mstatus is cleared. The mcause, mepc, and
+            mtval registers and the MPP and MPIE fields of mstatus are not written.
+            
+            Traps never transition from a more-privileged mode to a less-privileged mode. For example, if Mmode has delegated illegal instruction exceptions to S-mode, and M-mode software later executes
+            an illegal instruction, the trap is taken in M-mode, rather than being delegated to S-mode. By
+            contrast, traps may be taken horizontally. Using the same example, if M-mode has delegated illegal
+            instruction exceptions to S-mode, and S-mode software later executes an illegal instruction, the trap
+            is taken in S-mode.
+            
+            Delegated interrupts result in the interrupt being masked at the delegator privilege level. For
+            example, if the supervisor timer interrupt (STI) is delegated to S-mode by setting mideleg[5], STIs
+            will not be taken when executing in M-mode. By contrast, if mideleg[5] is clear, STIs can be taken
+            in any mode and regardless of current mode will transfer control to M-mode.
+            
+            
+            medeleg has a bit position allocated for every synchronous exception,
+            with the index of the bit position equal to the value returned in the mcause register (i.e., setting
+            bit 8 allows user-mode environment calls to be delegated to a lower-privilege trap handler).
+            
+            mideleg holds trap delegation bits for individual interrupts, with the layout of bits matching those
+            in the mip register (i.e., STIP interrupt delegation control is located in bit 5).
+            For exceptions that cannot occur in less privileged modes, the corresponding medeleg bits should
+            be hardwired to zero. In particular, medeleg[11] is hardwired to zero.\\
+			
             \item Machine Interrupt Registers (mip and mie)\\
+            The mip register is an 32-bit read/write register containing information on pending interrupts,
+            while mie is the corresponding 32-bit read/write register containing interrupt enable bits.
+            Interrupt cause number i (as reported in CSR mcause) corresponds with bit i in
+            both mip and mie. Bits 15:0 are allocated to standard interrupt causes only, while bits 16 and
+            above are designated for platform or custom use.
             
+            An interrupt i will be taken if bit i is set in both mip and mie, and if interrupts are globally enabled.
+            By default, M-mode interrupts are globally enabled if the hart’s current privilege mode is less than
+            M, or if the current privilege mode is M and the MIE bit in the mstatus register is set. If bit i
+            in mideleg is set, however, interrupts are considered to be globally enabled if the hart’s current
+            privilege mode equals the delegated privilege mode and that mode’s interrupt enable bit (xIE in
+            mstatus for mode x) is set, or if the current privilege mode is less than the delegated privilege mode.
+
+            The standard portions (bits 15:0) of registers mip and mie are formatted as shown in Figures \ref{fig:mip}
+            and \ref{fig:mie} respectively.
+            \begin{figure}[h]
+            \centering
+            \includegraphics[width=12 cm]{diagrams/mip.jpg}
+            \caption{Standard portion (bits 15:0) of mip.}
+            \label{fig:mip}
+            \end{figure}
+            \begin{figure}[h]
+            \centering
+            \includegraphics[width=12 cm]{diagrams/mie.jpg}
+            \caption{Standard portion (bits 15:0) of mie.}
+            \label{fig:mie}
+            \end{figure}
+            
+            Bits mip.MEIP and mie.MEIE are the interrupt-pending and interrupt-enable bits for machinelevel external interrupts.
+            
+            Bits mip.MTIP and mie.MTIE are the interrupt-pending and interrupt-enable bits for machine timer interrupts.
+            
+            Bits mip.MSIP and mie.MSIE are the interrupt-pending and interrupt-enable bits for machinelevel software interrupts.
+            
+            If supervisor mode is implemented, bits mip.SEIP and mie.SEIE are the interrupt-pending and
+            interrupt-enable bits for supervisor-level external interrupts. SEIP is writable in mip, and may be
+            written by M-mode software to indicate to S-mode that an external interrupt is pending. Additionally, the platform-level interrupt controller may generate supervisor-level external interrupts.
+            Supervisor-level external interrupts are made pending based on the logical-OR of the softwarewritable SEIP bit and the signal from the external interrupt controller. When mip is read with a
+            CSR instruction, the value of the SEIP bit returned in the rd destination register is the logical-OR
+            of the software-writable bit and the interrupt signal from the interrupt controller. However, the
+            value used in the read-modify-write sequence of a CSRRS or CSRRC instruction contains only the
+            software-writable SEIP bit, ignoring the interrupt value from the external interrupt controller.
+            
+            Multiple simultaneous interrupts destined for different privilege modes are handled in decreasing
+            order of destined privilege mode. Multiple simultaneous interrupts destined for the same privilege
+            mode are handled in the following decreasing priority order: MEI, MSI, MTI, SEI, SSI, STI.
+            Synchronous exceptions are of lower priority than all interrupts.
+            
+            Restricted views of the mip and mie registers appear as the sip and sie registers for supervisor
+            level. If an interrupt is delegated to S-mode by setting a bit in the mideleg register, it becomes
+            visible in the sip register and is maskable using the sie register. Otherwise, the corresponding
+            bits in sip and sie appear to be hardwired to zero.\\
+			
             \item Machine Scratch Register (mscratch)\\
             The mscratch is an MXLEN-bit read/write register\\
             Typically, it is used to hold a pointer to a machine-mode hart-local context space and swapped with a user register upon entry to an M-mode trap handler.\\
