@@ -363,6 +363,88 @@ at lower privilege levels. M-mode is used for low-level access to a hardware pla
     Upon reset, a hart’s privilege mode is set to M. The mstatus fields MIE and MPRV are reset to 0.
 \end{itemize}
 
+\subsubsection*{“N” Standard Extension for User-Level Interrupts}
+When the N extension is present, and the outer execution environment has delegated designated
+interrupts and exceptions to user-level, then hardware can transfer control directly to a user-level
+trap handler without invoking the outer execution environment.
+\begin{itemize}
+    \item[1- ]Additional CSRs
+    New user-visible CSRs are added to support the N extension.
+        \begin{itemize}
+        \item User Status Register (ustatus)\\
+        The ustatus register is a 32-bit read/write register formatted as shown in Figure \ref{fig:ustatus}. The
+        ustatus register keeps track of and controls the hart’s current operating state.
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=10 cm]{diagrams/ustatus.jpg}
+            \caption{User-mode status register (ustatus).}
+            \label{fig:ustatus}
+            \end{figure}
+            
+            The user interrupt-enable bit UIE disables user-level interrupts when clear. The value of UIE is
+            copied into UPIE when a user-level trap is taken, and the value of UIE is set to zero to provide
+            atomicity for the user-level trap handler.
+
+            The UIE and UPIE bits are mirrored in the mstatus and sstatus registers in the same bit positions.\\
+            
+            \item User Interrupt Registers (uip and uie)\\
+            The uip register is a UXLEN-bit read/write register containing information on pending interrupts,
+            while uie is the corresponding UXLEN-bit read/write register containing interrupt enable bits.
+            \begin{figure}[h!]
+            \centering
+            \includegraphics[width=15 cm]{diagrams/uip.jpg}
+            \caption{User interrupt-pending register (uip).}
+            \label{fig:uip}
+            \end{figure}
+            
+            \begin{figure}[h!]
+            \centering
+            \includegraphics[width=15 cm]{diagrams/uie.jpg}
+            \caption{User interrupt-enable register (uie)}
+            \label{fig:uie}
+            \end{figure}
+            
+            Three types of interrupts are defined: software interrupts, timer interrupts, and external interrupts.
+            A user-level software interrupt is triggered on the current hart by writing 1 to its user software
+            interrupt-pending (USIP) bit in the uip register. A pending user-level software interrupt can be
+            cleared by writing 0 to the USIP bit in uip. User-level software interrupts are disabled when the
+            USIE bit in the uie register is clear.
+            
+            The ABI should provide a mechanism to send interprocessor interrupts to other harts, which will
+            ultimately cause the USIP bit to be set in the recipient hart’s uip register.
+            
+            All bits besides USIP in the uip register are read-only.
+            
+            A user-level timer interrupt is pending if the UTIP bit in the uip register is set. User-level timer
+            interrupts are disabled when the UTIE bit in the uie register is clear. The ABI should provide a
+            mechanism to clear a pending timer interrupt.
+            
+            A user-level external interrupt is pending if the UEIP bit in the uip register is set. User-level
+            external interrupts are disabled when the UEIE bit in the uie register is clear. The ABI should
+            provide facilities to mask, unmask, and query the cause of external interrupts.
+            
+            The uip and uie registers are subsets of the mip and mie registers. Reading any field, or writing
+            any writable field, of uip/uie effects a read or write of the homonymous field of mip/mie. If S-mode
+            is implemented, the uip and uie registers are also subsets of the sip and sie registers.\\
+            
+            \item Supervisor Trap Delegation Registers (sedeleg and sideleg)\\
+            For systems with both S-mode and the N extension, new CSRs sedeleg and sideleg are added.
+            These registers have the same layout as the machine trap delegation registers, medeleg and mideleg.
+
+            sedeleg and sideleg allow S-mode to delegate traps to U-mode. Only bits corresponding to traps
+            that have been delegated to S-mode are writable; the others are hardwired to zero. Setting a bit
+            in sedeleg or sideleg delegates the corresponding trap in U-mode to the U-mode trap handler.\\
+            
+            \item Other CSRs\\
+            The uscratch, uepc, ucause, utvec, and utval CSRs are defined analogously to the mscratch,
+            mepc, mcause, mtvec, and mtval CSRs.\\
+        \end{itemize}
+    \item[2- ]N Extension Instructions
+        \begin{itemize}
+        The URET instruction is added to perform the analogous function to MRET and SRET.
+        \end{itemize}
+    \end{itemize}
+	
 \subsection{Interrupt Controller}
 RISC-V defines the following interrupts per Hart:
 \begin{itemize}
