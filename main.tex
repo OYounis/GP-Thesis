@@ -3,6 +3,7 @@
 
 \usepackage[a4paper, margin = 1.0in, bindingoffset = 1cm]{geometry}
 \usepackage[english]{babel}
+\usepackage[open]{bookmark}
 \usepackage{blindtext}
 \usepackage{{microtype}}
 \usepackage{graphicx}
@@ -11,6 +12,7 @@
 \usepackage{mfirstuc}
 \usepackage{afterpage}
 \usepackage{subfiles}
+\usepackage{array}
 
 \graphicspath{{images/}}
 \pagestyle{fancy}
@@ -95,11 +97,6 @@
 %%%%%%%%%%%%%%%%% Contents %%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tableofcontents
-\afterpage{\blankpage}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%% Figures %%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%% Figures %%%%%%%%%%%%%%%%%
@@ -126,9 +123,10 @@
 
 \subfile{subfiles/ch4_SoC}
 \subfile{subfiles/ch4subAlexcore}
+\subfile{subfiles/ch4subprivilege}
 \subfile{subfiles/ch4subOpenpiton}
-\subfile{subfiles/ch4subOpenpiton}
-\subfile{subfiles/ch4subOpenpiton}
+\subfile{subfiles/ch4subCryptoIP}
+\subfile{subfiles/ch4subCompliance}
 
 \subfile{subfiles/ch5_FPGA}
 
