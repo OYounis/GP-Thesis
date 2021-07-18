@@ -6,4 +6,290 @@
 
 \chapter{Silicon Implementation}
 
+
+\section{Synthesis}
+    \subsection{Flow Chart of the Synthesis Process}
+The logic synthesis process consists of two steps - translation and 
+optimization. 
+\begin{itemize}
+\item Translation involves transforming a HDL (RTL) description to gates
+\item optimization involves selecting the optimal combination of ASIC technology library cells to achieve the required functionality.
+\end{itemize}
+
+as shown in fig \ref{fig:syn_flow}
+\begin{figure}[h]
+\centering
+\includegraphics[width=3cm]{diagrams/syn_flow.png}
+\caption{syn flow}
+\label{fig:syn_flow}
+\end{figure}
+
+
+  
+    
+\subsection{Inputs and Outputs Of this stage}
+Inputs and Outputs files Of syn flow as seen below in Fig \ref{fig:ip_op_syn}
+
+   \begin{figure}[t]
+\centering
+\includegraphics[scale = 0.8]{diagrams/ip_op_syn.png}
+\caption{Input and Output files}
+\label{fig:ip_op_syn}
+\end{figure}
+    \subsection{Setting the Libraries}
+The technology library to which the design will be mapped must be defined in order for the synthesis tool to know how to map the design. The following are the many library kinds, each of which provides particular information on the cells and the technology:
+\begin{itemize}
+\item \textbf{Technology libraries:} Each cell in a semiconductor vendor's library has information on its features and functions. Cell name, area, delay, function, default design rule restrictions, operating circumstances, and wire-load model are some of the features that may be defined for each cell. DC should be given a technology library in.db format.
+\begin{enumerate}
+\item These libraries are used 
+by DC as the target library, which contains the cells to which the design will be mapped
+\item  They are 
+also part of the link library (along with other sub-designs), which DC uses to resolve references. 
+The technology libraries are also used to calculate delay and power consumption of the design, as 
+they contain timing and power information about the cells.
+\end{enumerate}
+\item  \textbf{Symbol libraries:} contain the graphic symbols that represent library cells which are used when we want to draw the circuit schematics (in Design Vision). They usually have the extension .sdb
+\item \textbf{DesignWare libraries:} contain reusable building blocks or components, that implement specific 
+well-known functions like addition, subtraction, multiplication, and operators like 
+\>,<,>=,<=
+\\ They usually have the extension .sldb.
+
+\end{itemize}
+
+
+	
+    \subsection{Reading in the Design}
+    DC provides us with two different methods:
+    
+\begin{itemize}
+\item \textbf{The Analyse then Elaborate Method:} The analyze and then elaborate method is the preferred method to use when reading in new RTL, for various reasons. This method works in two phases, the first phase is the analyze phase where the design is read, checked for any errors and stored as an intermediate result in the default WORK library, or any other library specified by the user.
+
+\\The second phase is the elaborate phase where the design is mapped to a GTECH 
+implementation and the HDL operators are replaced with the appropriate DesignWare 
+components. During this phase it is allowed to select non-default values for design 
+parameters, finally DC resolves references and reports if there are any unresolved 
+references in the design
+\item \textbf{The Read\_file Method:}The read\_file method performs more or less the same functionality of the analyze
+and elaborate method, with some differences. The read\_file method works in one stage only so it is less preferable when it comes to reading in new designs, as it does not allow for intermediate results like the analyse command. The read\_file method does not automatically resolve references and report unresolved ones; the user must use link command afterwards to do that
+\end{itemize}
+\begin{itemize}
+\end{itemize}
+\begin{itemize}
+\end{itemize}
+\begin{itemize}
+\end{itemize}
+
+    \subsection{Constraints}
+The design rule constraints we will be discussing are: maximum transition time, maximum fanout, maximum capacitance and minimum capacitance. 
+\begin{itemize}
+\item \textbf{Maximum Transition Time:} We use the \textit{set\_max\_transition} command to set the longest time (in time units consistent with those defined in the technology library) required for the driving pin of a net to change its logic value.
+\item \textbf{Maximum Fanout:} We use the \textit{set\_max\_fanout} command to set the maximum number of equal gates that can be driven by this port or design. DC attempts to ensure that the sum of fanout\_load attributes of the driven cells is less than the max\_fanout attribute of the driving cell.
+\item \textbf{Maximum and Minimum Capacitance:} We use the \textit{set\_max\_capacitance} command to define the maximum total capacitive load that an output port can drive. Capacitance is specified in units consistent with technology library definition
+\\Similarly, we use the\textit{ set\_min\_capacitance} command to define the minimum total capacitive load an output port can drive, in units consistent with technology library capacitance units
+\end{itemize}
+
+    \subsection{ Report Analysis}
+Design Compiler offers us the convenience of generating a wide variety of reports, to validate the correctness and quality of our implementation
+   \begin{itemize}
+\item \textbf{Timing reports} Design Compiler has a built-in static timing analyzer called DesignTime. Static Timing Analysis 
+can determine if a circuit meets timing constraints without dynamic simulation which is an advantage when it comes to saving time.
+as seen below in Fig \ref{fig:timing_report}
+ \begin{figure}[h!]
+\centering
+\includegraphics[scale = 0.8]{diagrams/timing_report.PNG}
+\caption{Timing report}
+\label{fig:timing_report}
+\end{figure}
+
+\item \textbf{Area reports} The overall area of the design is included in this report. It estimates this area by combining the area characteristics of the technology library's gates. The area units are usually defined in the technology.also in the library, or in a related document as seen below in Fig \ref{fig:area_report}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale = 0.8]{diagrams/area_report.PNG}
+\caption{Area report}
+\label{fig:area_report}
+\end{figure}
+
+\end{itemize}
+
+    \subsection{ Flow of RISCV}
+\subsubsection{Script steps:}
+\begin{enumerate}
+\item  Identify technology library.
+\item  Import design (netlist).
+\item  Design constraints.
+\end{enumerate}
+
+
+
+    \subsection{ Challenges}
+    Add text here
+
+\section{PnR}
+
+    \subsection{ Basic Physical Design Flow Using IC Compiler}
+    The goal of physical design is to convert the synthesized netlist into a GDSII file that is 
+manufacturable. 
+\begin{itemize}
+\end{itemize}
+
+\begin{itemize}
+\item \textbf{The main steps of PnR flow:} as seen below in Fig \ref{fig:PnR_flow}
+\end{itemize}
+\begin{figure}[h]
+\centering
+\includegraphics[width=3cm]{diagrams/PnR_flow.PNG}
+\caption{ PnR flow}
+\label{fig:PnR_flow}
+\end{figure}
+
+\begin{itemize}
+\item \textbf{Inputs/Ouputs of the Physical Design Process:} as seen below in Fig \ref{fig:IO_IC}
+\end{itemize}
+\begin{figure}[h]
+\centering
+\includegraphics[width=18cm]{diagrams/IO_IC.png}
+\caption{ Input Output or PnR}
+\label{fig:IO_IC}
+\end{figure}
+
+    \subsection{Floorplanning} 
+    
+\begin{itemize}
+\item \textbf{Description and Basic Concepts}
+		
+\begin{enumerate}
+\item Size & shape of the block
+\item Voltage area creation (Power domains)
+\item IO placement
+\item Creating standard cell rows
+\item Macro-placement
+\item Adding routing & placement blockages (as required)
+\end{enumerate}
+
+\item \textbf{Inputs and Outputs Of this stage}  as seen below in Fig \ref{fig:IO_floorplaning}
+	
+\begin{figure}[h]
+\centering
+\includegraphics[width=17cm]{diagrams/IO_floorplaning.PNG}
+\caption{ Inputs and Outputs of Floorplanning}
+\label{fig:IO_floorplaning}
+\end{figure}
+
+\item \textbf{Floorplanning Goals}
+
+\begin{enumerate}
+\item Minimize the total chip area.
+\item Make routing phase easy (routable).
+\item Improve the performance by reducing signal delays.
+\item Place macros and blocks in the core.
+\item Determine routing areas between macros/blocks.
+\end{enumerate}
+\end{itemize}
+
+ 		
+    \subsection{Power-Planning}
+\begin{itemize}
+\item \textbf{Description} 
+\begin{enumerate}
+\item  Rings: These are the structures that surround the core and any macro or black box. They carry the VDD/VSS around the chip.
+\item Stripes: These structures carries VDD and VSS from Rings across the chip.
+\item Rails: These are the horizontal and vertical structures that connect VDD and VSS to the standard cell VDD and VSS.
+\end{enumerate}
+
+\item  \textbf{Inputs/Outputs of Power-Planning Stage} 
+as seen below in Fig \ref{fig:IO_power}
+\begin{figure}[h]
+\centering
+\includegraphics[width=17cm]{diagrams/IO_power.PNG}
+\caption{ Inputs and Outputs of Power-Planning}
+\label{fig:IO_power}
+\end{figure}
+\end{itemize}
+    \subsection{Placement}
+    \begin{itemize}
+\item \textbf{Description} The placement stage is done using the place\_opt command and it has several sub\-step. 
+\\There are several options for configuring the 
+flow of this stage according to the needs of our design. For example, we may invoke place\_opt
+with \-congestion to encourage the tool to place cells with the goal of minimizing congestion 
+or with \-area\_recovery which enables buffer removal and cell downsizing of non critical 
+paths.
+
+
+\item \textbf{Inputs/Outputs of Placement Stage} as seen below in Fig \ref{fig:IO_placment}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=17cm]{diagrams/IO_placment.PNG}
+\caption{ Inputs and Outputs of Placement}
+\label{fig:IO_placment}
+\end{figure}
+
+
+\end{itemize}
+
+    \subsection{Clock Tree Synthesis (CTS)}
+     \begin{itemize}
+\item \textbf{Description} The initial state of the design before CTS is as follows; 
+
+\begin{enumerate}
+\item The placement of the cells of the design should have been completed. 
+\item  The power and ground nets should have already been prerouted. 
+\item The estimated congestion (from virtual routing) should be acceptable. 
+\item The estimated timing should be acceptable (we should have positive or zero slack, we should not be seeing any negative slacks). 
+\item The estimated maximum capacitance, transition, etc.. should have no violations. 
+\item The high fanout nets should have been synthesized (during AHFS phase in placement as 
+discussed above), except for the clock nets. 
+\item  The clock nets prior to this stage were treated as ideal and thus will not have been buffered 
+so far. Thus before CTS it is assumed that all clock pins are diven by the same clock source 
+without any skew
+
+\end{enumerate}
+\item \textbf{Inputs/Outputs of CTS Stage} as seen below in Fig \ref{fig:IO_CTS}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=17cm]{diagrams/IO_CTS.PNG}
+\caption{ Inputs and Outputs of CTS}
+\label{fig:IO_CTS}
+\end{figure}
+
+
+
+\end{itemize}
+    \subsection{Routing}
+     \begin{itemize}
+\item \textbf{Description} 
+\begin{enumerate}
+\item Global Routing: global routing (GR) only assigns the nets to be routed to specific metal layers and global routing cells (Gcells). 
+Note: Congestion means that more tracks are needed than available
+\item Track Assignment: Assigns each net to a specific track and lays down the actual metaltraces. This stage also attempts to: make long, straight traces, reduce the number of vias. The Track Assignment does not check or follow physical DRC rules.
+\item Detail Routing: Detail route is concerned with specifying the complete interconnect path 
+and fixing all the DRC violations after Track Assignment. The detail router does not work 
+on the entire chip at the same time like Track Assignment. Instead it works by rerouting 
+within the small sub-areas of the design called “SBoxes”
+\item Search and Repair: These S&R loops attempt to fix the remaining DRC violations in the 
+design by working through the design in progressively larger SBoxes. The smaller the 
+SBox, the less routing resources are available to fix the violations but also, the less 
+disruption caused and the less deterioration of timing
+\end{enumerate}
+
+
+
+\item \textbf{Inputs/Outputs of Routing Stage} as seen below in Fig \ref{fig:IO_routing}
+\begin{figure}[h]
+\centering
+\includegraphics[width=17cm]{diagrams/IO_routing.PNG}
+\caption{ Inputs and Outputs of routing}
+\label{fig:IO_routing}
+\end{figure}
+
+
+\end{itemize}
+\subsection{ Flow of RISCV}
+    Add text here
+    \subsection{ Challenges}
+    Add text here
+   
+    
 \end{document}
