@@ -206,19 +206,29 @@ Example: A situation in which multiple instructions are ready to enter the execu
 \item \textbf{Solving Hazards}
 In our system we used scoreboard to solve hazard.
 In a scoreboard, the data dependencies of every instruction are logged, tracked and strictly observed at all times. Instructions are released only when the scoreboard determines that there are no conflicts with previously issued ("in flight") instructions. If an instruction is stalled because it is unsafe to issue (or there are insufficient resources), the scoreboard monitors the flow of executing instructions until all dependencies have been resolved before the stalled instruction is issued.
-So we mainly track every instructions and stall if it will cause hazard problem.\\
+So we mainly track every instruction and stall if it will cause  problem.\\
+\\* Stall\\
+In the design of pipelined computer processors, a pipeline stall is a delay in execution of an instruction in order to resolve a hazard.
+in figure \ref{fig:img2} we are inserting a delay in the form of No Operation instruction, a NOP (No Operation) is basically adding zero to register zero hence wasting portion of time.
+   \begin{figure}[bh]
+\centering
+\includegraphics[scale=2]{diagrams/insertingnop.jpg}
+
+\caption{Hazard prevention by inserting NOP}
+\label{fig:img2}
+\end{figure}
 \\* \textbf {Stall uses in our design}
 \begin{enumerate}
-    \item using stall in  data dependencies mentioned like RAW,WAR and WAW.\\
-    text here
+    \item using stall in data dependencies mentioned like RAW,WAR and WAW.\\
+    if for example some data dependency happens it will be detected through scoreboard stalling frontend stage and decode stage(inserting NOP in the pipe),and the instruction causing the hazard will wait to be issued when data dependency is resolved.
     \item using stall to solve control hazards.\\
-        text here
+       in some cases (jumps and branches) we need to kill the followed instruction by inserting nop instead of the killed instruction.
 
     \item using stall while switching between data memory and code memory.\\
-        text here
+        as per our cache system we needed to stall our pipe while we are fetching an instruction from code  memory and stalling our pipe while executing load/store into data memory  to deal with memory latency.
 
     \item using stall if there is an AES custom instruction.\\
-       text here
+      as we integrated our design with AES by custom instruction we needed to stall the pipe while we are using the AES module(executing AES instructions) as we cant proceed executing instructions without making sure AES instructions are handled by the module. 
 
 \end{enumerate}
 
