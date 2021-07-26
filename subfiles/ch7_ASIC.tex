@@ -415,15 +415,68 @@ After running routing flow we
     \item analyze the design and the DRCS and try to solve them.\\
     mention drcs solved and not solved 
     \item analysing IR drop as we see in figure \ref{fig:irdrop} the region in the middle has the highest IR drop with a value of 7mv acceptable. 
-    \begin{figure}[h]
+    \begin{figure}[h!]
     \centering
     \includegraphics[width=10cm]{diagrams/irdrop.png}
     \caption{IR drop of the design}
     \label{fig:irdrop}
 \end{figure}
-    \item making sure design still making setup and try to push it if it didn't meet hold until it has positive slacks as shown in figures \ref{setup} \ref{hold}. 
-    
+    \item making sure design still meeting setup and try to push it if it didn't meet hold until it has positive slacks.
+    our design met the setup timing with positive slack of 5.29 ns and met the hold timing with zero slack which is acceptable.
+    \item also we need to check the congestion after routing and make sure that there is no major overflow and congested areas.
 \end{itemize}
+
+\subsection{DRC Checks and chip finishing}
+After routing we need to check the DRC (Design Rule Constraint Checks) to analyze the problems from routing and try to solve them.
+
+DRC types:
+\begin{itemize}
+    \item Short violation
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=10 cm]{diagrams/short_violation.png}
+        \caption{short violation on metal 1}
+        \label{fig:short_violation}
+    \end{figure}
+    \item Different net spacing violation
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=10 cm]{diagrams/diff_net_spacing.png}
+        \caption{Different net spacing violation on metal 2}
+        \label{fig:diff_net_spacing}
+    \end{figure}
+    \newpage
+    \item minimum enclosed area violation
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=10 cm]{diagrams/min_area_enclosed.png}
+        \caption{min. enclosed area violation on metal 3}
+        \label{fig:min_area_enclosed}
+    \end{figure}
+    \item minimum area violation
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=10 cm]{diagrams/min_area.png}
+        \caption{min. area violation on metal 3}
+        \label{fig:min_area}
+    \end{figure}
+\end{itemize}
+Then we will insert filler cells To ensure that all power nets are connected and to provide continuity in the rows for VDD and VSS nets and it also contains substrate nwell connection to improve substrate biasing and to add decoupling capacitors to improve the stability of the power supply.
+Now we can run LVS check and see the congestion shown in figure \ref{fig:congestion_finished} and see our chip after finishing as shown in figure \ref{fig:finished} and save the output GDS file.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=10 cm]{diagrams/congestion_after_finishing.png}
+    \caption{congestion map}
+    \label{fig:congestion_finished}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=10 cm]{diagrams/finished.png}
+    \caption{final chip}
+    \label{fig:finished}
+\end{figure}
 
 
 \end{document}
