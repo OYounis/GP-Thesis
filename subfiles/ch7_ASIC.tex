@@ -7,6 +7,7 @@
 \chapter{Silicon Implementation}
 \section{Synthesis}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{Flow chart of the synthesis process}
 The logic synthesis process consists of two main steps - translation and 
 optimization. See figure \ref{fig:syn_flow} for the complete flow of the synthesis process. Figure \ref{fig:ip_op_syn} illustrates the inputs and outputs of this process.
@@ -104,14 +105,14 @@ The overall area of the design is included in this report. It estimates this are
 \end{figure}
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{RISC-V synthesis flow and challenges}
+\subsection{synthesis flow and challenges}
 \subsubsection{Script steps:}
 \begin{enumerate}
-\item  Identify technology library.
-\item  Import design (netlist).
-\item  Design constraints.
+\item  Identify technology library,importing Design and Constraints.
+\item  Translating and Mapping the RTL to a specific technology cells.
+\item  Analysing and Meeting area and timing requirments.
 \end{enumerate}
-ADD TEXT HERE......................
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -148,7 +149,7 @@ Inputs and outputs Of this stage are illustrated in Fig \ref{fig:IO_floorplaning
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=15cm]{diagrams/IO_floorplaning.PNG}
+\includegraphics[width=12cm]{diagrams/IO_floorplaning.PNG}
 \caption{ Inputs and Outputs of Floorplanning}
 \label{fig:IO_floorplaning}
 \end{figure}
@@ -175,7 +176,7 @@ These are the horizontal and vertical structures that connect VDD and VSS to the
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=15cm]{diagrams/IO_power.PNG}
+\includegraphics[width=10cm]{diagrams/IO_power.PNG}
 \caption{ Inputs and outputs of power-planning}
 \label{fig:IO_power}
 \end{figure}
@@ -185,13 +186,19 @@ The placement stage is done using the \textit{place\_opt} command and it has sev
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=15cm]{diagrams/IO_placment.PNG}
+\includegraphics[width=12cm]{diagrams/IO_placment.PNG}
 \caption{ Inputs and outputs of the placement stage}
 \label{fig:IO_placment}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Clock Tree Synthesis (CTS)}
-The initial state of the design before CTS is as follows:
+\begin{figure}[h!]
+    \centering
+    \includegraphics[scale = 0.75]{diagrams/priorcts.jpg}
+    \caption{Registers Prior to CTS}
+    \label{fig:priorcts}
+\end{figure}
+The initial state of the design before CTS as figure \ref {fig:priorcts} is as follows:
 
 \begin{enumerate}
 \item The placement of the cells of the design should have been completed. 
@@ -209,13 +216,15 @@ without any skew.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=15cm]{diagrams/IO_CTS.PNG}
+\includegraphics[width=10cm]{diagrams/IO_CTS.PNG}
 \caption{ Inputs and outputs of the CTS stage}
 \label{fig:IO_CTS}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Routing}
-
+ \subsection{Routing}
+After the CTS stage is completed with satisfactory skew-balancing and no hold (or setup) timing
+violations, we may proceed to the routing stage. In this stage the design undergoes detailed routing,
+where the actual path of interconnects across different metal layers and in different geometric configurations.
 \begin{enumerate}
 \item \textbf{Global Routing:}\\
 Global routing (GR) only assigns the nets to be routed to specific metal layers and global routing cells (Gcells). Congestion means that more tracks are needed than available
@@ -236,7 +245,185 @@ These S\&R loops attempt to fix the remaining DRC violations in the design by wo
     \caption{ Inputs and outputs of routing}
     \label{fig:IO_routing}
 \end{figure}
+\newpage After routing we try to optimize the design:\\
+Routing optimization involves-
+\begin{itemize}
+    \item Fixing timing violations.
+    \item Fixing LVS (opens & shorts).
+    \item Fixing DRCs.
+    \item Fixing Timing DRCs (Meet max transition, max capacitance and max fanout).
+    \item Finding & Fixing Antenna violations (using jumpers and antenna diodes).
+    \item Area and Leakage power recovery.
+    \item Redundant via insertion.
+\end{itemize}
+
+
+
+
+
+
+ \subsection{Chip finishing}
+Chip finish is a stage after post-route optimization, where filler cells and metal fills are added to meet the DRC rules. The different steps in chip finish are briefly described.\\
+Filler cells are used for rail continuity and to fill up gaps between standard cells in the rows, thereby reducing the DRC violations created by the base layers,
+Filler cells are physical-only cells designed in such a way that they contain only n-well, p-well & power rails.\\
+The process of adding metal fills is as follows-\\
+To maintain uniformity for any metal layer, we have window based density rules.
+For each window metal density will be specified.
+If the utilization of metal in a window is less than that given in DRC rule deck, then we add dummy metals to overcome density DRC.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{ RISC-V PnR flow and challenges}
-    Add text here
+\newpage  \section{Physical Design Flow of Alexcore}
+After we obtained the gate-level netlist of Alexcore, we entered the physical design phase of this
+block as a standalone, as a sort of preparation for the physical design stage when we obtain the
+integrated \textit{Core + Openpiton} .\\
+This phase underwent several changes and attempts until we managed to get an initial layout that
+would aid us in further stages entering into the physical design of the entire system.\\
+The results and attempts made in each stage of the physical design flow are detailed in the
+following sections.\\
+For this phase of the design, we used the netlist we obtained of Alexcore at 50 MHz using the
+open source nangate 45nm technology library.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Synthesise and challenges}
+after running the commands on Design compiler to read our design , translating RTL ,and mapping the generic cells to technology specific cells.
+running on 50 MHZ we got area as shown in figure \ref{fig:areasyn}.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=12cm]{diagrams/areasyn.JPG}
+    \caption{Area of Cells of the Alexcore }
+    \label{fig:areasyn}
+\end{figure}
+
+\subsection{Floorplanning} 
+We created floorplanning with some parameters.
+\begin{itemize}
+    \item core utilization 0.25 (25%)/
+    \item space between core and chip boundaries 12.4.
+    \item specifying parameters of power mesh.
+        \begin{itemize}
+            \item minimum number of straps 20.
+            \item minimum spacing and minimum width.
+        \end{itemize}
+    \item layers 10,9,8,7 for power routes. 
+\end{itemize}
+\newpage Cell insertion\\
+During this stage, the following cell was added as well.\\
+Tap cells
+\begin{itemize}
+   \item Tap cells are used to provide substrate connection.
+   \item They are used to avoid latch-up.
+   \item They connect n-well to VDD and p-sub to VSS.
+   \item They are inserted in layout at regular intervals based on tap rules (tap to gate distance) defined in the technology DRC file.
+\end{itemize}
+then we can insert macros and its keepout margins 
+and insert hard or partial placement blockage for placement.\\
+after connecting VSS/VDD rings,doing virtual placement of the standards cells for an initial estimate of timing and congestion issues,we got figure \ref{fig:floorplan} showing cells placed virtually with no consideration for any legality of placement.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=15cm]{diagrams/cellsrandom.JPG}
+    \caption{floorplan of Alexcore Zoomed}
+    \label{fig:floorplan}
+\end{figure}
+After \textit {report\_timing} Slack for setup (met) with margin 2.19.
+ 
+ \newline worst negative hold slack 1.24.
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Placement} 
+At
+this stage we are very concerned with setup timing and congestion criteria. Below is a figure that
+demonstrates the shape of the legally placed standard cells after the placement stage.\\
+after placing cells we checked that all cells are legally placed by \textit{check\_legality} and it passed as shown in figure \ref{fig:checklegality}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=12cm]{diagrams/checklegality.JPG}
+    \caption{check legality: pass}
+    \label{fig:checklegality}
+\end{figure}
+
+During this stage, the following cell was added as well.\\
+Tie cell
+\begin{itemize}
+  \item Tie cells are used to avoid direct gate connection to the power or ground network thereby protecting the cell from damage.
+\item your design, some cell inputs may require a logic 0 or logic 1 value. Instead of connecting these to the VDD/VSS rails/rings, you connect them to special cells available in your library called TIE cells.
+\item tie high cell, nmos acts as diode connected and gives logic 0 to the gate of pmos, so we will get logic 1 as output whereas in tie low cell, pmos act as diode connected and gives logic 1 to the gate of nmos, so we will get logic 0 as output.
+\end{itemize}
+as shown in figure \ref{fig:congestion} 
+the congestion before the cts.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=10cm]{diagrams/global_routing_congestion_before_routing.png}
+    \caption{Congestion before routing}
+    \label{fig:congestion}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage \subsection{Clock Tree Synthesis CTS} 
+After placement has been legalized and optimized for timing and congestion requirements, we can
+move on to the clock tree synthesis phase. This phase is extremely critical in eliminating clock
+skews and achieving the required clock insertion delay.\\
+Figure \ref{fig:clknetwork} :Shows Clock Tree Levels of
+Clock “clk”  in different colors each color represent a different routing layer.\\
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=13cm]{diagrams/ctsnetwork.JPG}
+    \caption{Clock tree network}
+    \label{fig:clknetwork}
+\end{figure}
+we can see hold violation with small slack can be handled later on in the flow.\\
+
+
+
+\subsubsection{Checks after CTS }
+\begin{itemize}
+    \item congestion
+    After the routing of Clock
+nets (done after CTS and
+before detail routing of
+other signals) we need to
+check again the congestion
+report : no problem.
+\item setup was met earlier in the design and had big margin so we checked and it still didn't violate. 
+\item worst hold paths reported as shown in figure \ref{fig:holdviolation}.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=13cm]{diagrams/holdviolation.JPG}
+    \caption{clock tree summary}
+    \label{fig:holdviolation}
+\end{figure}
+
+\newpage \item and as a clock tree summary we have figure \ref{fig:clocktreesummary} showing results as skew.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=13cm]{diagrams/clk_tree_summary.png}
+    \caption{clock tree summary}
+    \label{fig:clocktreesummary}
+\end{figure}
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \subsection{routing}
+After CTS is completed with satisfactory timing parameters, we can start the routing phase,
+our target in routing phase is
+\begin{itemize}
+    \item route all. cells without making any design rule violations like shorts and opens.
+    \item not making the post-cts time image worse.
+\end{itemize}
+
+\newpage 
+After running routing flow we 
+\begin{itemize}
+    \item analyze the design and the DRCS and try to solve them.\\
+    mention drcs solved and not solved 
+    \item analysing IR drop as we see in figure \ref{fig:irdrop} the region in the middle has the highest IR drop with a value of 7mv acceptable. 
+    \begin{figure}[h]
+    \centering
+    \includegraphics[width=10cm]{diagrams/irdrop.png}
+    \caption{IR drop of the design}
+    \label{fig:irdrop}
+\end{figure}
+    \item making sure design still making setup and try to push it if it didn't meet hold until it has positive slacks as shown in figures \ref{setup} \ref{hold}. 
+    
+\end{itemize}
+
+
 \end{document}
