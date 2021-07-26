@@ -27,7 +27,7 @@ Usage sequence:
 We implemented this sequence by a finite state machine as our control unit to control the process of the encryption when the custom instruction from the processor asserted.
 \subsection*{Implementation results - ASIC}
 The core has been implemented in standard cell ASIC processes.\\
-\\\textbf{TSMC 180 nm}
+\textbf{TSMC 180 nm}
 Target frequency: 20 MHz Complete flow from RTL to placed gates. Automatic clock gating and scan insertion.\\
 When the custom instruction for encryption loaded by the processor, the processor will generate a start signal to start the IP encryption sequence and to stall the processor till the IP finishes the encryption process and assert the done signal, then the result encrypted values will be saved in the CSR register file and the processor will continue the normal operations.
 \begin{itemize}
@@ -38,7 +38,7 @@ When the custom instruction for encryption loaded by the processor, the processo
 
 \subsection*{Implementation results - FPGA}
 The core has been implemented in Altera and Xilinx FPGA devices.\\
-\\\textbf{Altera Cyclone V GX}
+\textbf{Altera Cyclone V GX}
 \begin{itemize}
     \item 2624 ALMs
     \item 3123 Regs
@@ -46,7 +46,7 @@ The core has been implemented in Altera and Xilinx FPGA devices.\\
     \item 46 cycles/block
 \end{itemize}
 
-\\\textbf{Altera Cyclone IV GX}
+\textbf{Altera Cyclone IV GX}
 \begin{itemize}
     \item 7426 LEs
     \item 2994 Regs
@@ -54,7 +54,7 @@ The core has been implemented in Altera and Xilinx FPGA devices.\\
     \item 46 cycles/block
 \end{itemize}
 
-\\\textbf{Xilinx Artix 7 200T-3}
+\textbf{Xilinx Artix 7 200T-3}
 \begin{itemize}
     \item 2298 slices
     \item 2989 regs
